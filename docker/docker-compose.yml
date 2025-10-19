@@ -7,28 +7,28 @@ services:
       - ${APP_VAR}:/var/www/html
     ports:
       - ${APP_PORT}:80
-    #restart: always
-    restart: "no"
+    restart: always
+    #restart: "no"
     depends_on:
       - php
       - online_tests_db
 
   php:
     build: containers/php8.3/
-    restart: "no"
+    restart: always
     volumes:
       - ./logs/php/app/:/var/log/php/
       - ${APP_VAR}:/var/www/html
 
   adminer:
     image: adminer:latest
-    restart: "no"
+    restart: always
     ports:
       - 8702:8080
 
   online_tests_db:
     image: postgres:16
-    restart: "no"
+    restart: always
     ports:
       - ${APP_DB_PORT}:5432
     environment:

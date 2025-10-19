@@ -1,3 +1,4 @@
 #!/bin/bash
 umask 0002
-/bin/bash
+
+exec nginx -g 'daemon off;'
