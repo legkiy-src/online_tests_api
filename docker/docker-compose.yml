@@ -1,0 +1,39 @@
+services:
+  nginx:
+    build: ./containers/nginx/
+    volumes:
+      - ./containers/nginx/conf.d/app.conf:/etc/nginx/conf.d/default.conf
+      - ./logs/nginx/app/:/var/log/nginx/
+      - ${APP_VAR}:/var/www/html
+    ports:
+      - ${APP_PORT}:80
+    #restart: always
+    restart: "no"
+    depends_on:
+      - php
+      - online_tests_db
+
+  php:
+    build: containers/php8.3/
+    restart: "no"
+    volumes:
+      - ./logs/php/app/:/var/log/php/
+      - ${APP_VAR}:/var/www/html
+
+  adminer:
+    image: adminer:latest
+    restart: "no"
+    ports:
+      - 8702:8080
+
+  online_tests_db:
+    image: postgres:16
+    restart: "no"
+    ports:
+      - ${APP_DB_PORT}:5432
+    environment:
+      - POSTGRES_DB=${APP_DB_NAME}
+      - POSTGRES_USER=${APP_DB_USER}
+      - POSTGRES_PASSWORD=${APP_DB_PASSWORD}
+    volumes:
+      - ./databases/postgres/online_tests/:/var/lib/postgresql/data
