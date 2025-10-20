@@ -12,6 +12,8 @@ services:
     depends_on:
       - php
       - online_tests_db
+    networks:
+        - app_network
 
   php:
     build: containers/php8.3/
@@ -19,21 +21,34 @@ services:
     volumes:
       - ./logs/php/app/:/var/log/php/
       - ${APP_VAR}:/var/www/html
+    depends_on:
+        - online_tests_db
+    networks:
+        - app_network
 
   adminer:
     image: adminer:latest
     restart: always
     ports:
       - 8702:8080
+    networks:
+        - app_network
 
   online_tests_db:
-    image: postgres:16
-    restart: always
-    ports:
-      - ${APP_DB_PORT}:5432
-    environment:
-      - POSTGRES_DB=${APP_DB_NAME}
-      - POSTGRES_USER=${APP_DB_USER}
-      - POSTGRES_PASSWORD=${APP_DB_PASSWORD}
-    volumes:
-      - ./databases/postgres/online_tests/:/var/lib/postgresql/data
+      image: postgres:16
+      restart: always
+      ports:
+          - "54370:5432"
+      environment:
+          - POSTGRES_DB=online_tests
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=postgres
+      volumes:
+          - ./databases/postgres/online_tests/:/var/lib/postgresql/data
+      command: [ "postgres", "-c", "listen_addresses=*", "-c", "port=5432" ]
+      networks:
+          - app_network
+
+  networks:
+      app_network:
+          driver: bridge

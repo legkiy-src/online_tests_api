@@ -29,7 +29,9 @@ RUN docker-php-ext-install \
     bcmath \
     gd \
     intl \
+    pdo\
     pdo_pgsql \
+    pgsql\
     zip \
     xml \
     opcache
