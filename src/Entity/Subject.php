@@ -14,8 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Subject
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\GeneratedValue(strategy: 'SEQUENCE')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -29,6 +29,10 @@ class Subject
 
     #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'subject')]
     private Collection $questions;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'teacher_id', nullable: true)]
+    private ?User $teacher = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
@@ -60,16 +64,6 @@ class Subject
         return $this->id;
     }
 
-    public function getAttempts(): ?Collection
-    {
-        return $this->attempts;
-    }
-
-    public function getQuestions(): Collection
-    {
-        return $this->questions;
-    }
-
     public function getName(): ?string
     {
         return $this->name;
@@ -78,6 +72,48 @@ class Subject
     public function getDescription(): ?string
     {
         return $this->description;
+    }
+
+    public function getAttempts(): ?Collection
+    {
+        return $this->attempts;
+    }
+
+    public function addAttempt(Attempt $attempt): static
+    {
+        if (!$this->attempts->contains($attempt)) {
+            $this->attempts->add($attempt);
+            $attempt->setSubject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAttempt(Attempt $attempt): static
+    {
+        if ($this->attempts->removeElement($attempt)) {
+            if ($attempt->getSubject() === $this) {
+                $attempt->setSubject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getQuestions(): Collection
+    {
+        return $this->questions;
+    }
+
+    public function getTeacher(): ?User
+    {
+        return $this->teacher;
+    }
+
+    public function setTeacher(?User $teacher): static
+    {
+        $this->teacher = $teacher;
+        return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
