@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20251103191445 extends AbstractMigration
+final class Version20251103202211 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -99,6 +99,7 @@ final class Version20251103191445 extends AbstractMigration
               teacher_id INT DEFAULT NULL,
               name VARCHAR(255) NOT NULL,
               description TEXT DEFAULT NULL,
+              is_active BOOLEAN NOT NULL,
               created_at DATE NOT NULL,
               updated_at DATE NOT NULL,
               PRIMARY KEY(id)
