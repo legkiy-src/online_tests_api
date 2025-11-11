@@ -18,6 +18,11 @@ class Subject
     #[ORM\GeneratedValue(strategy: 'SEQUENCE')]
     private ?int $id = null;
 
+    #[ORM\ManyToOne(targetEntity: Test::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\OneToMany(targetEntity: Test::class, mappedBy: 'subject', orphanRemoval: true)]
+    private Collection $tests;
+
     #[ORM\Column(length: 255)]
     private string $name;
 
@@ -45,6 +50,7 @@ class Subject
         ?string $description = null
     ) {
         $this->name = $name;
+        $this->tests = new ArrayCollection();
         $this->description = $description;
         $this->attempts = new ArrayCollection();
         $this->questions = new ArrayCollection();
@@ -62,6 +68,21 @@ class Subject
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getTests(): Collection
+    {
+        return $this->tests;
+    }
+
+    public function addTest(Test $test): static
+    {
+        if (!$this->tests->contains($test)) {
+            $this->tests->add($test);
+            $test->setSubject($this);
+        }
+
+        return $this;
     }
 
     public function getName(): ?string
