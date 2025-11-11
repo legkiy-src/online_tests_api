@@ -17,6 +17,10 @@ class Question
     #[ORM\GeneratedValue(strategy: 'SEQUENCE')]
     private ?int $id = null;
 
+    #[ORM\ManyToOne(targetEntity: Test::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private Test $test;
+
     #[ORM\ManyToOne(targetEntity: Subject::class, inversedBy: 'questions')]
     private Subject $subject;
 
@@ -76,7 +80,19 @@ class Question
         return $this->id;
     }
 
-    public function getSubject(): ?Subject
+    public function getTest(): Test
+    {
+        return $this->test;
+    }
+
+    public function setTest(Test $test): static
+    {
+        $this->test = $test;
+
+        return $this;
+    }
+
+    public function getSubject(): Subject
     {
         return $this->subject;
     }

@@ -22,6 +22,10 @@ class Attempt
     #[ORM\ManyToOne(targetEntity: Subject::class, inversedBy: 'attempts')]
     private Subject $subject;
 
+    #[ORM\ManyToOne(targetEntity: Test::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private Test $test;
+
     #[ORM\ManyToOne(targetEntity: User::class)]
     private User $user;
 
@@ -29,13 +33,13 @@ class Attempt
     private ?int $score = null;
 
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
-    private ?int $maxScore = null;
+    private int $maxScore;
 
     #[ORM\Column(type: Types::STRING, enumType: AttemptStatus::class)]
     private AttemptStatus $status;
 
     #[ORM\Column(type: 'integer')]
-    private int $timeSpent = 0;
+    private ?int $timeSpent = 0;
 
     #[ORM\OneToMany(targetEntity: AttemptAnswer::class, mappedBy: 'attempt', orphanRemoval: true)]
     private Collection $attemptAnswers;
@@ -46,20 +50,32 @@ class Attempt
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $completedAt = null;
 
-    public function __construct(User $user, Subject $subject, int $maxScore)
-    {
+    public function __construct(
+        User $user,
+        Subject $subject,
+        Test $test,
+        int $maxScore
+    ) {
         $this->user = $user;
         $this->subject = $subject;
+        $this->test = $test;
         $this->maxScore = $maxScore;
         $this->startedAt = new \DateTimeImmutable();
         $this->status = AttemptStatus::IN_PROGRESS;
         $this->attemptAnswers = new ArrayCollection();
     }
 
-    public static function create(User $user, Subject $subject, int $maxScore): self {
+    public static function create(
+        User $user,
+        Subject $subject,
+        Test $test,
+        int $maxScore
+    ): self
+    {
         return new self(
             $user,
             $subject,
+            $test,
             $maxScore
         );
     }
@@ -77,6 +93,18 @@ class Attempt
     public function setSubject(?Subject $subject): static
     {
         $this->subject = $subject;
+
+        return $this;
+    }
+
+    public function getTest(): Test
+    {
+        return $this->test;
+    }
+
+    public function setTest(Test $test): static
+    {
+        $this->test = $test;
 
         return $this;
     }
@@ -105,7 +133,7 @@ class Attempt
 
     public function setScore(?float $score): static
     {
-        $this->score = $score === null ? null : (int) round($score * 100);
+        $this->score = $score === null ? null : (int)round($score * 100);
 
         return $this;
     }
@@ -129,7 +157,7 @@ class Attempt
 
     public function setMaxScore(float $maxScore): static
     {
-        $this->maxScore = (int) round($maxScore * 100);
+        $this->maxScore = (int)round($maxScore * 100);
 
         return $this;
     }
@@ -149,6 +177,18 @@ class Attempt
     public function setStatus(AttemptStatus $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getTimeSpend(): ?int
+    {
+        return $this->timeSpent;
+    }
+
+    public function setTimeSpend(?int $timeSpent): static
+    {
+        $this->timeSpent = $timeSpent;
 
         return $this;
     }
