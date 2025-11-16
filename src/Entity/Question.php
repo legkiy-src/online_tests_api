@@ -6,6 +6,8 @@ namespace App\Entity;
 
 use App\Enum\Question\QuestionType;
 use App\Repository\QuestionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -17,12 +19,19 @@ class Question
     #[ORM\GeneratedValue(strategy: 'SEQUENCE')]
     private ?int $id = null;
 
+    #[ORM\ManyToOne(targetEntity: Author::class, inversedBy: 'tests')]
+    #[ORM\JoinColumn(nullable: false)]
+    private Author $author;
+
     #[ORM\ManyToOne(targetEntity: Test::class)]
     #[ORM\JoinColumn(nullable: false)]
     private Test $test;
 
     #[ORM\ManyToOne(targetEntity: Subject::class, inversedBy: 'questions')]
     private Subject $subject;
+
+    #[ORM\OneToMany(targetEntity: Answer::class, mappedBy: 'question')]
+    private Collection $answers;
 
     #[ORM\Column(type: Types::TEXT)]
     private string $questionText;
@@ -43,13 +52,16 @@ class Question
     private \DateTimeImmutable $updatedAt;
 
     public function __construct(
+        Author $author,
+        Test $test,
         Subject $subject,
         string $questionText,
         QuestionType $type,
-        int $points,
-        int $orderIndex
-    )
-    {
+        int $points = 1,
+        int $orderIndex = 0
+    ) {
+        $this->author = $author;
+        $this->test = $test;
         $this->subject = $subject;
         $this->questionText = $questionText;
         $this->type = $type;
@@ -57,9 +69,12 @@ class Question
         $this->orderIndex = $orderIndex;
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
+        $this->answers = new ArrayCollection();
     }
 
     public static function create(
+        Author $author,
+        Test $test,
         Subject $subject,
         string $questionText,
         QuestionType $type,
@@ -67,6 +82,8 @@ class Question
         int $orderIndex
     ): self {
         return new self(
+            $author,
+            $test,
             $subject,
             $questionText,
             $type,
@@ -78,6 +95,18 @@ class Question
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getAuthor(): ?Author
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(Author $author): static
+    {
+        $this->author = $author;
+
+        return $this;
     }
 
     public function getTest(): Test
@@ -102,6 +131,11 @@ class Question
         $this->subject = $subject;
 
         return $this;
+    }
+
+    public function getAnswers(): Collection
+    {
+        return $this->answers;
     }
 
     public function getQuestionText(): string
