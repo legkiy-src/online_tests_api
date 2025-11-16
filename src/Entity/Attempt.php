@@ -19,15 +19,13 @@ class Attempt
     #[ORM\GeneratedValue(strategy: 'SEQUENCE')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Subject::class, inversedBy: 'attempts')]
-    private Subject $subject;
+    #[ORM\ManyToOne(targetEntity: Student::class, inversedBy: 'attempts')]
+    #[ORM\JoinColumn(nullable: false)]
+    private Student $student;
 
     #[ORM\ManyToOne(targetEntity: Test::class)]
     #[ORM\JoinColumn(nullable: false)]
     private Test $test;
-
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    private User $user;
 
     #[ORM\Column(type: Types::INTEGER, precision: 5, scale: 2, nullable: true)]
     private ?int $score = null;
@@ -51,13 +49,11 @@ class Attempt
     private ?\DateTimeImmutable $completedAt = null;
 
     public function __construct(
-        User $user,
-        Subject $subject,
+        Student $student,
         Test $test,
         int $maxScore
     ) {
-        $this->user = $user;
-        $this->subject = $subject;
+        $this->student = $student;
         $this->test = $test;
         $this->maxScore = $maxScore;
         $this->startedAt = new \DateTimeImmutable();
@@ -66,15 +62,12 @@ class Attempt
     }
 
     public static function create(
-        User $user,
-        Subject $subject,
+        Student $student,
         Test $test,
         int $maxScore
-    ): self
-    {
+    ): self {
         return new self(
-            $user,
-            $subject,
+            $student,
             $test,
             $maxScore
         );
@@ -85,16 +78,9 @@ class Attempt
         return $this->id;
     }
 
-    public function getSubject(): Subject
+    public function getStudent(): Student
     {
-        return $this->subject;
-    }
-
-    public function setSubject(?Subject $subject): static
-    {
-        $this->subject = $subject;
-
-        return $this;
+        return $this->student;
     }
 
     public function getTest(): Test
@@ -105,18 +91,6 @@ class Attempt
     public function setTest(Test $test): static
     {
         $this->test = $test;
-
-        return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): static
-    {
-        $this->user = $user;
 
         return $this;
     }

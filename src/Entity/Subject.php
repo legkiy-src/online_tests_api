@@ -18,26 +18,21 @@ class Subject
     #[ORM\GeneratedValue(strategy: 'SEQUENCE')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Test::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    #[ORM\OneToMany(targetEntity: Test::class, mappedBy: 'subject', orphanRemoval: true)]
-    private Collection $tests;
-
     #[ORM\Column(length: 255)]
     private string $name;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description;
 
-    #[ORM\OneToMany(targetEntity: Attempt::class, mappedBy: 'subject')]
-    private Collection $attempts;
+    #[ORM\OneToMany(targetEntity: Test::class, mappedBy: 'subject')]
+    private Collection $tests;
 
     #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'subject')]
     private Collection $questions;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(name: 'teacher_id', nullable: true)]
-    private ?User $teacher = null;
+    #[ORM\ManyToOne(targetEntity: Teacher::class, inversedBy: 'subjects')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Teacher $teacher = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
@@ -52,7 +47,6 @@ class Subject
         $this->name = $name;
         $this->tests = new ArrayCollection();
         $this->description = $description;
-        $this->attempts = new ArrayCollection();
         $this->questions = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
@@ -95,45 +89,20 @@ class Subject
         return $this->description;
     }
 
-    public function getAttempts(): ?Collection
-    {
-        return $this->attempts;
-    }
-
-    public function addAttempt(Attempt $attempt): static
-    {
-        if (!$this->attempts->contains($attempt)) {
-            $this->attempts->add($attempt);
-            $attempt->setSubject($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAttempt(Attempt $attempt): static
-    {
-        if ($this->attempts->removeElement($attempt)) {
-            if ($attempt->getSubject() === $this) {
-                $attempt->setSubject(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getQuestions(): Collection
     {
         return $this->questions;
     }
 
-    public function getTeacher(): ?User
+    public function getTeacher(): ?Teacher
     {
         return $this->teacher;
     }
 
-    public function setTeacher(?User $teacher): static
+    public function setTeacher(?Teacher $teacher): static
     {
         $this->teacher = $teacher;
+
         return $this;
     }
 

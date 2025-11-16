@@ -21,6 +21,10 @@ class Test
     #[ORM\Column(type: Types::STRING)]
     private string $title;
 
+    #[ORM\ManyToOne(targetEntity: Author::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private Author $author;
+
     #[ORM\ManyToOne(targetEntity: Subject::class)]
     #[ORM\JoinColumn(nullable: false)]
     private Subject $subject;
@@ -61,10 +65,6 @@ class Test
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $availableUntil = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private User $author;
-
     #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'test', orphanRemoval: true)]
     #[ORM\OrderBy(['orderIndex' => 'ASC'])]
     private Collection $questions;
@@ -78,7 +78,7 @@ class Test
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private \DateTimeImmutable $updatedAt;
 
-    public function __construct(string $title, Subject $subject, User $author)
+    public function __construct(string $title, Subject $subject, Author $author)
     {
         $this->title = $title;
         $this->subject = $subject;
@@ -89,7 +89,7 @@ class Test
         $this->attempts = new ArrayCollection();
     }
 
-    public function create(string $title, Subject $subject, User $author): self
+    public function create(string $title, Subject $subject, Author $author): self
     {
         return new self($title, $subject, $author);
     }
@@ -303,7 +303,7 @@ class Test
         return $this->author;
     }
 
-    public function setAuthor(?User $author): static
+    public function setAuthor(?Author $author): static
     {
         $this->author = $author;
 
