@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\AttemptAnswerRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -16,33 +20,31 @@ class AttemptAnswer
 
     #[ORM\ManyToOne(targetEntity: Attempt::class, inversedBy: 'attemptAnswers')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Attempt $attempt = null;
+    private Attempt $attempt;
 
     #[ORM\ManyToOne(targetEntity: Question::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Question $question = null;
+    private Question $question;
 
-    #[ORM\ManyToOne(targetEntity: Answer::class)]
-    #[ORM\JoinColumn(onDelete: 'SET NULL')]
-    private ?Answer $answer = null;
+    #[ORM\ManyToMany(targetEntity: Answer::class)]
+    #[ORM\JoinTable(name: 'attempt_answer_selections')]
+    private Collection $selectedAnswers;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $answerText = null;
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $customAnswer = null;
 
-    #[ORM\Column]
-    private ?bool $isCorrect = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private \DateTimeImmutable $answeredAt;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $answeredAt = null;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $pointsAwarded = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $teacherComment = null;
 
     public function __construct()
     {
+        $this->selectedAnswers = new ArrayCollection();
         $this->answeredAt = new \DateTimeImmutable();
     }
 
@@ -51,74 +53,55 @@ class AttemptAnswer
         return $this->id;
     }
 
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    public function getAttempt(): ?Attempt
+    public function getAttempt(): Attempt
     {
         return $this->attempt;
     }
 
-    public function setAttempt(?Attempt $attempt): static
+    public function setAttempt(Attempt $attempt): static
     {
         $this->attempt = $attempt;
 
         return $this;
     }
 
-    public function getQuestion(): ?Question
+    public function getQuestion(): Question
     {
         return $this->question;
     }
 
-    public function setQuestion(?Question $question): static
+    public function setQuestion(Question $question): static
     {
         $this->question = $question;
 
         return $this;
     }
 
-    public function getAnswer(): ?Answer
+    public function getSelectedAnswers(): Collection
     {
-        return $this->answer;
+        return $this->selectedAnswers;
     }
 
-    public function setAnswer(?Answer $answer): static
+    public function setSelectedAnswers(Collection $selectedAnswers): static
     {
-        $this->answer = $answer;
+        $this->selectedAnswers = $selectedAnswers;
 
         return $this;
     }
 
-    public function getAnswerText(): ?string
+    public function getCustomAnswer(): ?string
     {
-        return $this->answerText;
+        return $this->customAnswer;
     }
 
-    public function setAnswerText(?string $answerText): static
+    public function setCustomAnswer(?string $customAnswer): static
     {
-        $this->answerText = $answerText;
+        $this->customAnswer = $customAnswer;
 
         return $this;
     }
 
-    public function isCorrect(): ?bool
-    {
-        return $this->isCorrect;
-    }
-
-    public function setIsCorrect(bool $isCorrect): static
-    {
-        $this->isCorrect = $isCorrect;
-
-        return $this;
-    }
-
-    public function getAnsweredAt(): ?\DateTimeImmutable
+    public function getAnsweredAt(): \DateTimeImmutable
     {
         return $this->answeredAt;
     }
@@ -126,6 +109,30 @@ class AttemptAnswer
     public function setAnsweredAt(\DateTimeImmutable $answeredAt): static
     {
         $this->answeredAt = $answeredAt;
+
+        return $this;
+    }
+
+    public function getPointsAwarded(): ?int
+    {
+        return $this->pointsAwarded;
+    }
+
+    public function setPointsAwarded(?int $pointsAwarded): static
+    {
+        $this->pointsAwarded = $pointsAwarded;
+
+        return $this;
+    }
+
+    public function getTeacherComment(): ?string
+    {
+        return $this->teacherComment;
+    }
+
+    public function setTeacherComment(?string $teacherComment): static
+    {
+        $this->teacherComment = $teacherComment;
 
         return $this;
     }

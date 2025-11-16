@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Enum\User\UserRole;
-use App\Enum\User\UserStatus;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -39,11 +35,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $patronymic = null;
 
-    #[ORM\Column(type: Types::STRING, enumType: UserRole::class)]
-    private UserRole $role;
-
-    #[ORM\Column(type: Types::STRING, enumType: UserStatus::class)]
-    private UserStatus $status;
+    #[ORM\Column(type: Types::JSON)]
+    private array $roles = ['ROLE_USER'];
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
@@ -54,19 +47,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $lastLoginAt = null;
 
-    #[ORM\OneToMany(targetEntity: Attempt::class, mappedBy: 'user')]
-    private Collection $attempts;
-
-    #[ORM\OneToMany(targetEntity: Subject::class, mappedBy: 'teacher')]
-    private Collection $taughtSubjects;
-
-    public function __construct()
+    public function __construct(
+        string $email,
+        string $firstName,
+        string $lastName,
+        string $patronymic
+    )
     {
-        $this->role = UserRole::STUDENT;
-        $this->status = UserStatus::ACTIVE;
+        $this->email = $email;
+        $this->firstName = $firstName;
+        $this->lastName = $lastName;
+        $this->patronymic = $patronymic;
         $this->createdAt = new \DateTimeImmutable();
-        $this->attempts = new ArrayCollection();
-        $this->taughtSubjects = new ArrayCollection();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -82,6 +75,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
+
         return $this;
     }
 
@@ -133,31 +127,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        return [$this->role->value];
+        return $this->roles;
     }
 
-    public function getUserRole(): UserRole
+    public function setRoles(array $roles): static
     {
-        return $this->role;
-    }
-
-    public function setUserRole(UserRole $role): static
-    {
-        $this->role = $role;
+        // Убираем дубликаты и сохраняем порядок
+        $this->roles = array_values(array_unique($roles));
 
         return $this;
     }
 
-    public function getStatus(): UserStatus
+    public function addRole(string $role): static
     {
-        return $this->status;
-    }
-
-    public function setStatus(UserStatus $status): static
-    {
-        $this->status = $status;
+        if (!in_array($role, $this->roles, true)) {
+            $this->roles[] = $role;
+        }
 
         return $this;
+    }
+
+    public function removeRole(string $role): static
+    {
+        $this->roles = array_values(array_filter($this->roles, fn($r) => $r !== $role));
+
+        return $this;
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->roles, true);
     }
 
     public function getCreatedAt(): \DateTimeImmutable
@@ -192,58 +191,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastLoginAt(?\DateTimeImmutable $lastLoginAt): static
     {
         $this->lastLoginAt = $lastLoginAt;
-
-        return $this;
-    }
-
-    public function getAttempts(): Collection
-    {
-        return $this->attempts;
-    }
-
-    public function addAttempt(Attempt $attempt): static
-    {
-        if (!$this->attempts->contains($attempt)) {
-            $this->attempts->add($attempt);
-            $attempt->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAttempt(Attempt $attempt): static
-    {
-        if ($this->attempts->removeElement($attempt)) {
-            if ($attempt->getUser() === $this) {
-                $attempt->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getTaughtSubjects(): Collection
-    {
-        return $this->taughtSubjects;
-    }
-
-    public function addTaughtSubject(Subject $taughtSubject): static
-    {
-        if (!$this->taughtSubjects->contains($taughtSubject)) {
-            $this->taughtSubjects->add($taughtSubject);
-            $taughtSubject->setTeacher($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTaughtSubject(Subject $taughtSubject): static
-    {
-        if ($this->taughtSubjects->removeElement($taughtSubject)) {
-            if ($taughtSubject->getTeacher() === $this) {
-                $taughtSubject->setTeacher(null);
-            }
-        }
 
         return $this;
     }
