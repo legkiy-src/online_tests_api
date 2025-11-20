@@ -7,6 +7,8 @@ perm:
 	sudo find ../ -type f -exec chmod 664 {} \;
 	sudo chown -R sysuser:www-data ../
 	sudo chmod -R 775 ../
+	sudo chown -R sysuser:www-data ./
+	sudo chmod -R 775 ./
 
 up:
 	docker-compose up -d

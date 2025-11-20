@@ -11,16 +11,16 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Patch;
-use App\State\Subject\SubjectProvider;
+use App\State\Subject\GetSubjectCollectionProvider;
 //use App\State\Subject\SubjectProcessor;
 
 #[ApiResource(
     operations: [
-        new Get(
+        /*new Get(
             uriTemplate: '/subjects/{id}',
             requirements: ['id' => '\d+'],
             provider: GetSubjectProvider ::class
-        ),
+        ),*/
         new GetCollection(
             uriTemplate: '/subjects',
             provider: GetSubjectCollectionProvider::class

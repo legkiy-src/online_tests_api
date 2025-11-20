@@ -14,4 +14,9 @@ class SubjectRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Subject::class);
     }
+
+    public function findAll(): array
+    {
+        return parent::findAll();
+    }
 }

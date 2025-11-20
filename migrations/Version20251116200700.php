@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20251116174904 extends AbstractMigration
+final class Version20251116200700 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -54,6 +54,7 @@ final class Version20251116174904 extends AbstractMigration
               max_score INT DEFAULT NULL,
               status VARCHAR(255) NOT NULL,
               time_spent INT NOT NULL,
+              time_limit INT DEFAULT NULL,
               started_at DATE NOT NULL,
               completed_at DATE NOT NULL,
               PRIMARY KEY(id)
@@ -137,6 +138,8 @@ final class Version20251116174904 extends AbstractMigration
               teacher_id INT DEFAULT NULL,
               name VARCHAR(255) NOT NULL,
               description TEXT DEFAULT NULL,
+              is_active BOOLEAN NOT NULL,
+              default_time_limit INT DEFAULT NULL,
               created_at DATE NOT NULL,
               updated_at DATE NOT NULL,
               PRIMARY KEY(id)
