@@ -34,6 +34,12 @@ class Subject
     #[ORM\JoinColumn(nullable: true)]
     private ?Teacher $teacher = null;
 
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $isActive = true;
+
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    private ?int $defaultTimeLimit = null;
+
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
 
@@ -103,6 +109,29 @@ class Subject
     {
         $this->teacher = $teacher;
 
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getDefaultTimeLimit(): ?int
+    {
+        return $this->defaultTimeLimit;
+    }
+
+    public function setDefaultTimeLimit(?int $defaultTimeLimit): static
+    {
+        $this->defaultTimeLimit = $defaultTimeLimit;
         return $this;
     }
 

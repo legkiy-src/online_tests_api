@@ -39,6 +39,9 @@ class Attempt
     #[ORM\Column(type: 'integer')]
     private ?int $timeSpent = 0;
 
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $timeLimit = null;
+
     #[ORM\OneToMany(targetEntity: AttemptAnswer::class, mappedBy: 'attempt', orphanRemoval: true)]
     private Collection $attemptAnswers;
 
@@ -178,6 +181,18 @@ class Attempt
             $this->attemptAnswers->add($attemptAnswer);
             $attemptAnswer->setAttempt($this);
         }
+
+        return $this;
+    }
+
+    public function getTimeLimit(): ?int
+    {
+        return $this->timeLimit;
+    }
+
+    public function setTimeLimit(?int $timeLimit): static
+    {
+        $this->timeLimit = $timeLimit;
 
         return $this;
     }
