@@ -15,6 +15,7 @@ use App\State\Subject\GetSubjectCollectionProvider;
 //use App\State\Subject\SubjectProcessor;
 
 #[ApiResource(
+    shortName: 'Subject',
     operations: [
         /*new Get(
             uriTemplate: '/subjects/{id}',

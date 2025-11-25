@@ -18,6 +18,6 @@ final class GetSubjectCollectionProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
     {
-        dd($this->subjectRepository->findAll());
+        return $this->subjectRepository->findAll();
     }
 }
