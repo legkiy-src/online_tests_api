@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Auth;
 
-use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\Auth\Dto\LoginCredentialsDto;
 use App\Service\Auth\Dto\AuthResultDto;
@@ -34,7 +33,7 @@ readonly class AuthService
         return new AuthResultDto(
             token: $token,
             user: $user,
-            expiresIn: 3600 // или получать из конфигурации
+            expiresIn: 3600 #ToDo получать из конфигурации
         );
     }
 
