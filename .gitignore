@@ -9,6 +9,7 @@
 /vendor/
 ###< symfony/framework-bundle ###
 docker/.env
+docker/logs/*
 .idea
 config/jwt/*.pem
 
