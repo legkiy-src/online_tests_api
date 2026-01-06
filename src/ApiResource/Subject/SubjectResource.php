@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Patch;
+use App\State\Subject\CreateSubjectProcessor;
 use App\State\Subject\GetSubjectCollectionProvider;
 //use App\State\Subject\SubjectProcessor;
 
@@ -26,13 +27,13 @@ use App\State\Subject\GetSubjectCollectionProvider;
             uriTemplate: '/subjects',
             provider: GetSubjectCollectionProvider::class
         ),
-        /*new Post(
+        new Post(
             uriTemplate: '/subjects',
             input: CreateSubjectDto::class,
             output: SubjectOutputDto::class,
-            processor: SubjectProcessor::class
+            processor: CreateSubjectProcessor::class
         ),
-        new Put(
+        /*new Put(
             uriTemplate: '/subjects/{id}',
             requirements: ['id' => '\d+'],
             input: UpdateSubjectDto::class,

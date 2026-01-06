@@ -35,7 +35,7 @@ class Subject
     private ?Teacher $teacher = null;
 
     #[ORM\Column(type: Types::BOOLEAN)]
-    private bool $isActive = true;
+    private bool $isActive = false;
 
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
     private ?int $defaultTimeLimit = null;

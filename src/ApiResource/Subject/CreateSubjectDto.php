@@ -4,23 +4,26 @@ declare(strict_types=1);
 
 namespace App\ApiResource\Subject;
 
-class SubjectOutputDto
+use Symfony\Component\Validator\Constraints as Assert;
+
+class CreateSubjectDto
 {
     public function __construct(
-        private int $id,
-        private string $name,
-        private \DateTimeImmutable $createdAt,
-        private \DateTimeImmutable $updatedAt,
-        private ?string $description = null,
-        private ?int $teacherId = null,
-        private bool $isActive = false,
-        private ?int $defaultTimeLimit = null
-    ) {
-    }
+        #[Assert\NotBlank(message: 'name не должен быть пустым')]
+        #[Assert\Length(max: 255, maxMessage: 'максимальная длина name 255 символов')]
+        private ?string $name,
 
-    public function getId(): int
+        #[Assert\Length(max: 1000, maxMessage: 'максимальная длина name 1000 символов')]
+        #[Assert\Length(max: 1000)]
+        private ?string $description,
+
+        private ?int $teacherId = null,
+
+        private bool $isActive = false,
+
+        private ?int $defaultTimeLimit = null
+    )
     {
-        return $this->id;
     }
 
     public function getName(): string
@@ -46,15 +49,5 @@ class SubjectOutputDto
     public function getDefaultTimeLimit(): ?int
     {
         return $this->defaultTimeLimit;
-    }
-
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function getUpdatedAt(): \DateTimeImmutable
-    {
-        return $this->updatedAt;
     }
 }
